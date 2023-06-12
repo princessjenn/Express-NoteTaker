@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const PORT = process.env.PORT || 3001; // to assign deployment to heroku
 const app = express();
 
@@ -10,8 +11,8 @@ app.use(express.static('public'));
 
 
 // GET request for notes
-app.get('/api/notes', (req, res) => {
-  fs.readFile(path.join(__dirname, 'db.json'), 'utf8', (err, data) => {
+app.get('/notes', (req, res) => {
+  fs.readFile(path.join(__dirname, 'db', 'db.json'), 'utf8', (err, data) => {
     if (err) {
       console.error(err);
       res.status(500).json({ error: 'Server error' });
@@ -24,10 +25,10 @@ app.get('/api/notes', (req, res) => {
 
 
 //GET request for notes by id
-app.get('/api/notes/:id', (req, res) => {
+app.get('/notes/:id', (req, res) => {
   const noteId = req.params.id;
 
-  fs.readFile(path.join(__dirname, 'db.json'), 'utf8', (err, data) => {
+  fs.readFile(path.join(__dirname, 'db','db.json'), 'utf8', (err, data) => {
     if (err) {
       console.error(err);
       res.status(500).json({ error: 'Server error' });
@@ -48,14 +49,14 @@ app.get('/api/notes/:id', (req, res) => {
 
 
 // POST request for notes
-app.post('/api/notes', (req, res) => {
+app.post('/notes', (req, res) => {
   const saveNote = {
     id: uuidv4(),
     title: req.body.title,
     text: req.body.text,
   };
 
-  fs.readFile(path.join(__dirname, 'db.json'), 'utf8', (err, data) => {
+  fs.readFile(path.join(__dirname, 'db', 'db.json'), 'utf8', (err, data) => {
     if (err) {
       console.error(err);
       res.status(500).json({ error: 'Server error' });
@@ -66,7 +67,7 @@ app.post('/api/notes', (req, res) => {
     notes.push(saveNote);
 
     fs.writeFile(
-      path.join(__dirname, 'db.json'),
+      path.join(__dirname, 'db','db.json'),
       JSON.stringify(notes),
       (err) => {
         if (err) {
@@ -83,7 +84,7 @@ app.post('/api/notes', (req, res) => {
 
 
 //DELETE request by note id
-app.delete('/api/notes/:id', (req, res) => {
+app.delete('/notes/:id', (req, res) => {
   const noteId = req.params.id;
 
   fs.readFile(path.join(__dirname, 'db.json'), 'utf8', (err, data) => {
