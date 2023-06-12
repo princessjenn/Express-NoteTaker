@@ -151,23 +151,12 @@ To test the application, I performed the following steps:
 These steps helped me ensure that the application's core functionalities, such as creating, saving, editing, and deleting notes, were working as expected.
 
 
-
-
-
-
-
 ## Questions
 
-Our Personal Github Repositories:
+My Github Profile [here](https://github.com/princessjenn),
 
-Jennifer:
+Or
 
-https://github.com/princessjenn
+Email me [here](j.eckenrode@me.com).
 
-Jason:
 
-https://github.com/J3yT
-
-Brian:
-
-https://github.com/Badgers93
