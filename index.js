@@ -17,11 +17,16 @@ const readNotes = () => {
 };
 
 const writeNotes = (notes) => {
-  fs.writeFileSync(
-    path.join(__dirname, 'db.json'),
-    JSON.stringify(notes),
-    'utf8'
-  );
+  try {
+    fs.writeFileSync(
+      path.join(__dirname, 'db.json'),
+      JSON.stringify(notes),
+      'utf8'
+    );
+    console.log('Notes written to file successfully.');
+  } catch (error) {
+    console.error('Error writing notes to file:', error);
+  }
 };
 
 
@@ -30,10 +35,6 @@ app.get('/notes', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'notes.html'));
 });
 
-//GET request for all in 'index.html' file
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
 
 //GET request all saved notes
 app.get('/api/notes', (req, res) => {
@@ -63,7 +64,7 @@ app.post('/api/notes', (req, res) => {
 app.delete('/api/notes/:id', (req, res) => {
   const noteId = req.params.id;
 
-  fs.readFile(path.join(__dirname,'db.json'), 'utf8', (err, data) => {
+  fs.readFile(path.join(__dirname, 'db.json'), 'utf8', (err, data) => {
     if (err) {
       console.error(err);
       res.status(500).json({ error: 'Server error' });
@@ -95,6 +96,11 @@ app.delete('/api/notes/:id', (req, res) => {
       res.status(200).json({ success: true });
     });
   });
+});
+
+//GET request for all other requests in 'index.html' file
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.listen(PORT, () =>
