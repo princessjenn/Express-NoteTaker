@@ -12,13 +12,13 @@ app.use(express.static('public'));
 
 
 const readNotes = () => {
-  const data = fs.readFileSync(path.join(__dirname, 'db', 'db.json'), 'utf8');
+  const data = fs.readFileSync(path.join(__dirname, 'db.json'), 'utf8');
   return JSON.parse(data);
 };
 
 const writeNotes = (notes) => {
   fs.writeFileSync(
-    path.join(__dirname, 'db', 'db.json'),
+    path.join(__dirname, 'db.json'),
     JSON.stringify(notes),
     'utf8'
   );
@@ -63,7 +63,7 @@ app.post('/api/notes', (req, res) => {
 app.delete('/api/notes/:id', (req, res) => {
   const noteId = req.params.id;
 
-  fs.readFile(path.join(__dirname, 'db','db.json'), 'utf8', (err, data) => {
+  fs.readFile(path.join(__dirname,'db.json'), 'utf8', (err, data) => {
     if (err) {
       console.error(err);
       res.status(500).json({ error: 'Server error' });
@@ -85,7 +85,7 @@ app.delete('/api/notes/:id', (req, res) => {
     notes.splice(noteIndex, 1);
 
     // writes the updated notes back to the db.json file
-    fs.writeFile(path.join(__dirname, 'db', 'db.json'), JSON.stringify(notes), (err) => {
+    fs.writeFile(path.join(__dirname, 'db.json'), JSON.stringify(notes), (err) => {
       if (err) {
         console.error(err);
         res.status(500).json({ error: 'Server error' });
