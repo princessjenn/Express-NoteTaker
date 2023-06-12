@@ -123,9 +123,34 @@ Thanks for contributing!
 
 ## Tests
 
-First thing we needed to test before building the rest of our application was making sure that our Get API fetches were routing properly from our database Models, to the View. To test these endpoints we used help from Insomnia, and here is a screenshot example of a successful 200 response getting ONE dog's info by it's ID, therefore responding correctly through the Handlebars view!
+To test the application, I performed the following steps:
 
-![DogID Endpoint Test](testing_id_endpoint_Project2.png)
+1. Loaded the application in a web browser to ensure it was running properly.
+
+2. Created a new note by entering a title and text in the corresponding input fields.
+![Get Endpoint Test](get-request-working.png)
+
+3. Clicked the "Save" button to save the note.
+
+4. Verified that the saved note appeared in the sidebar list.
+![Save Note Test](save-note-working.png)
+
+5. Clicked on a saved note in the sidebar list to view its details in the main area. 
+
+6. Edited the title and text of a saved note to make changes.
+
+7. Clicked the "Save" button again to update the note with the changes. 
+
+8. Verified that the updated note was reflected in the sidebar list and main area.
+
+9. Clicked the "Delete" button next to a saved note to remove it.
+
+10. Checked that the deleted note was no longer present in the sidebar list.
+
+These steps helped me ensure that the application's core functionalities, such as creating, saving, editing, and deleting notes, were working as expected.
+
+
+
 
 
 
