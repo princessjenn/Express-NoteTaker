@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
 const PORT = process.env.PORT || 3001; // to assign deployment to heroku
 const app = express();
 
@@ -10,22 +11,56 @@ app.use(express.urlencoded({ extended: true })); //content: urlencoded
 app.use(express.static('public'));
 
 
-// GET request for notes
+const readNotes = () => {
+  const data = fs.readFileSync(path.join(__dirname, 'db', 'db.json'), 'utf8');
+  return JSON.parse(data);
+};
+
+const writeNotes = (notes) => {
+  fs.writeFileSync(
+    path.join(__dirname, 'db', 'db.json'),
+    JSON.stringify(notes),
+    'utf8'
+  );
+};
+
+
+// GET request for notes in 'notes.html'
 app.get('/notes', (req, res) => {
-  fs.readFile(path.join(__dirname, 'db', 'db.json'), 'utf8', (err, data) => {
-    if (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Server error' });
-      return;
-    }
-    const notes = JSON.parse(data);
-    res.status(200).json(notes);
-  });
+  res.sendFile(path.join(__dirname, 'public', 'notes.html'));
+});
+
+//GET request for all in 'index.html' file
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
+
+//GET request all saved notes
+app.get('/api/notes', (req, res) => {
+  const notes = readNotes();
+  res.json(notes);
 });
 
 
-//GET request for notes by id
-app.get('/notes/:id', (req, res) => {
+
+/// POST request to save a new note
+app.post('/api/notes', (req, res) => {
+  const newNote = {
+    id: uuidv4(),
+    title: req.body.title,
+    text: req.body.text,
+  };
+
+  const notes = readNotes();
+  notes.push(newNote);
+  writeNotes(notes);
+
+  res.json(newNote);
+});
+
+
+// DELETE request for deleting a note by id
+app.delete('/api/notes/:id', (req, res) => {
   const noteId = req.params.id;
 
   fs.readFile(path.join(__dirname, 'db','db.json'), 'utf8', (err, data) => {
@@ -35,81 +70,30 @@ app.get('/notes/:id', (req, res) => {
       return;
     }
 
-    const notes = JSON.parse(data);
-    const note = notes.find((note) => note.id === noteId);
+    let notes = JSON.parse(data);
 
-    if (!note) {
+    // finds the index of the note with the specified id
+    const noteIndex = notes.findIndex((note) => note.id === noteId);
+
+    // if the note is not found, return a 404 response
+    if (noteIndex === -1) {
       res.status(404).json({ error: 'Note not found' });
       return;
     }
 
-    res.status(200).json(note);
-  });
-});
+    // Remove the note from the array
+    notes.splice(noteIndex, 1);
 
-
-// POST request for notes
-app.post('/notes', (req, res) => {
-  const saveNote = {
-    id: uuidv4(),
-    title: req.body.title,
-    text: req.body.text,
-  };
-
-  fs.readFile(path.join(__dirname, 'db', 'db.json'), 'utf8', (err, data) => {
-    if (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Server error' });
-      return;
-    }
-
-    const notes = JSON.parse(data);
-    notes.push(saveNote);
-
-    fs.writeFile(
-      path.join(__dirname, 'db','db.json'),
-      JSON.stringify(notes),
-      (err) => {
-        if (err) {
-          console.error(err);
-          res.status(500).json({ error: 'Server error' });
-          return;
-        }
-
-        res.status(200).json(newNote);
+    // writes the updated notes back to the db.json file
+    fs.writeFile(path.join(__dirname, 'db', 'db.json'), JSON.stringify(notes), (err) => {
+      if (err) {
+        console.error(err);
+        res.status(500).json({ error: 'Server error' });
+        return;
       }
-    );
-  });
-});
 
-
-//DELETE request by note id
-app.delete('/notes/:id', (req, res) => {
-  const noteId = req.params.id;
-
-  fs.readFile(path.join(__dirname, 'db.json'), 'utf8', (err, data) => {
-    if (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Server error' });
-      return;
-    }
-
-    const notes = JSON.parse(data);
-    const updatedNotes = notes.filter((note) => note.id !== noteId);
-
-    fs.writeFile(
-      path.join(__dirname, 'db.json'),
-      JSON.stringify(updatedNotes),
-      (err) => {
-        if (err) {
-          console.error(err);
-          res.status(500).json({ error: 'Server error' });
-          return;
-        }
-
-        res.status(200).json({ success: true });
-      }
-    );
+      res.status(200).json({ success: true });
+    });
   });
 });
 
