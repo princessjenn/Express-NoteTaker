@@ -8,39 +8,108 @@ app.use(express.urlencoded({ extended: true })); //content: urlencoded
 
 app.use(express.static('public'));
 
+
 // GET request for notes
 app.get('/api/notes', (req, res) => {
-  //getNote
-
-  //pull out data from req.header
-
-  //write to file (db.json)
-  res.status(200).json({example:1});
+  fs.readFile(path.join(__dirname, 'db.json'), 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Server error' });
+      return;
+    }
+    const notes = JSON.parse(data);
+    res.status(200).json(notes);
+  });
 });
+
+
+//GET request for notes by id
+app.get('/api/notes/:id', (req, res) => {
+  const noteId = req.params.id;
+
+  fs.readFile(path.join(__dirname, 'db.json'), 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Server error' });
+      return;
+    }
+
+    const notes = JSON.parse(data);
+    const note = notes.find((note) => note.id === noteId);
+
+    if (!note) {
+      res.status(404).json({ error: 'Note not found' });
+      return;
+    }
+
+    res.status(200).json(note);
+  });
+});
+
 
 // POST request for notes
 app.post('/api/notes', (req, res) => {
-  //saveNote
+  const saveNote = {
+    id: uuidv4(),
+    title: req.body.title,
+    text: req.body.text,
+  };
 
-  //pull out data from req.body
+  fs.readFile(path.join(__dirname, 'db.json'), 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Server error' });
+      return;
+    }
 
-  //push to the db array (that we're importing)
+    const notes = JSON.parse(data);
+    notes.push(saveNote);
 
-  //write to file (db.json)
+    fs.writeFile(
+      path.join(__dirname, 'db.json'),
+      JSON.stringify(notes),
+      (err) => {
+        if (err) {
+          console.error(err);
+          res.status(500).json({ error: 'Server error' });
+          return;
+        }
 
-  res.status(200).json();
+        res.status(200).json(newNote);
+      }
+    );
+  });
 });
 
-app.delete('/api/notes', (req, res) => {
-  //deleteNote
 
-  //pulling from the URL
+//DELETE request by note id
+app.delete('/api/notes/:id', (req, res) => {
+  const noteId = req.params.id;
 
-  //removing item from the array (with whatever id is passed in {id})
+  fs.readFile(path.join(__dirname, 'db.json'), 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Server error' });
+      return;
+    }
 
-  //write to file (db.json)
+    const notes = JSON.parse(data);
+    const updatedNotes = notes.filter((note) => note.id !== noteId);
 
-  res.status(200).json();
+    fs.writeFile(
+      path.join(__dirname, 'db.json'),
+      JSON.stringify(updatedNotes),
+      (err) => {
+        if (err) {
+          console.error(err);
+          res.status(500).json({ error: 'Server error' });
+          return;
+        }
+
+        res.status(200).json({ success: true });
+      }
+    );
+  });
 });
 
 app.listen(PORT, () =>
