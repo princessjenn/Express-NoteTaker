@@ -138,6 +138,7 @@ To test the application, I performed the following steps:
 5. Clicked on a saved note in the sidebar list to view its details in the main area. 
 
 6. Edited the title and text of a saved note to make changes.
+![Save Note Test](update-note-working.png)
 
 7. Clicked the "Save" button again to update the note with the changes. 
 
