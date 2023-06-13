@@ -11,22 +11,22 @@ if (window.location.pathname === '/notes') {
   newNoteBtn = document.querySelector('.new-note');
   noteList = document.querySelectorAll('.list-container .list-group');
 
-  // id attributes to noteTitle and noteText elements
+  //id attributes to noteTitle and noteText elements
   noteTitle.id = 'note-title'; // 
   noteText.id = 'note-text'; // 
 };
 
-// Show an element
+//shows elements
 const show = (elem) => {
   elem.style.display = 'inline';
 };
 
-// Hide an element
+//hide elements
 const hide = (elem) => {
   elem.style.display = 'none';
 };
 
-// activeNote is used to keep track of the note in the textarea
+//activeNote is used to keep track of the note in the textarea
 let activeNote = {};
 
 const getNotes = () =>
@@ -81,9 +81,9 @@ const handleNoteSave = () => {
   });
 };
 
-// Delete the clicked note
+
+//Deletes the clicked note
 const handleNoteDelete = (e) => {
-  // Prevents the click listener for the list from being called when the button inside of it is clicked
   e.stopPropagation();
 
   const note = e.target;
@@ -99,14 +99,14 @@ const handleNoteDelete = (e) => {
   });
 };
 
-// Sets the activeNote and displays it
+//sets activeNote and displays it
 const handleNoteView = (e) => {
   e.preventDefault();
-  activeNote = JSON.parse(e.target.parentElement.getAttribute('data-note'));
+  activeNote = JSON.parse(e.target.parentNode.getAttribute('data-note'));
   renderActiveNote();
 };
 
-// Sets the activeNote to and empty object and allows the user to enter a new note
+//sets activeNote to and empty object and allows the user to enter a new note
 const handleNewNoteView = (e) => {
   activeNote = {};
   renderActiveNote();
@@ -120,7 +120,7 @@ const handleRenderSaveBtn = () => {
   }
 };
 
-// Render the list of note titles
+//render the list of note titles
 const renderNoteList = async (notes) => {
   let jsonNotes = await notes.json();
   if (window.location.pathname === '/notes') {
@@ -130,7 +130,7 @@ const renderNoteList = async (notes) => {
   let noteListItems = [];
   console.log(jsonNotes)
 
-  // Returns HTML element with or without a delete button
+  //returns HTML element with or without a delete button
   const createLi = (text, delBtn = true) => {
     const liEl = document.createElement('li');
     liEl.classList.add('list-group-item');
@@ -175,7 +175,7 @@ const renderNoteList = async (notes) => {
   }
 };
 
-// Gets notes from the db and renders them to the sidebar
+//gets notes from the db and renders them to the sidebar
 const getAndRenderNotes = () => getNotes().then(renderNoteList);
 
 document.addEventListener('DOMContentLoaded', () => {
